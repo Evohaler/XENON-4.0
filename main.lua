@@ -24,6 +24,8 @@ bulletImg = nil
 bullets = {} -- array of current bullets being drawn and updated
 
 player ={x=300, y=500, speed = 150, img=nil}
+animExplode = false
+animPowerUp = false
 
 --space
 background = love.graphics.newImage('Sprites/space_1200.png')
@@ -41,6 +43,8 @@ function love.load(arg)
   --Animation
   animation = newAnimation(love.graphics.newImage("Sprites/powerup.png"), 30, 30, 0.5)
   animThrust = newAnimation(love.graphics.newImage("Sprites/RocketPlume.png"), 30, 30, 0.5)
+  animExplosion =newAnimation(love.graphics.newImage("Sprites/Explosion.png"), 30, 30, 0.5)
+  animBaddySpin =newAnimation(love.graphics.newImage("Sprites/BaddySpin.png"), 30, 30, 0.5)
   --player
   player.img = love.graphics.newImage('Sprites/XenonShip.png')
   bulletImg = love.graphics.newImage('Sprites/Bolt.png')
@@ -67,7 +71,6 @@ end
     createEnemyTimer = createEnemyTimer - (1 * dt)
     if createEnemyTimer < 0 then
 	     createEnemyTimer = createEnemyTimerMax
-
 	-- Create an enemy
 	randomNumber = math.random(10, love.graphics.getWidth() - 10)
 	newEnemy = { x = randomNumber, y = -10, img = enemyImg }
@@ -99,13 +102,11 @@ end
        explosionSound:play()
 	   end
   end
-
   -- Time out how far apart our shots can be.
       canShootTimer = canShootTimer - (1 * dt)
   if canShootTimer < 0 then
       canShoot = true
   end
-
 --Player control
   if love.keyboard.isDown('space') and canShoot then
 	      newBullet = { x = player.x + (player.img:getWidth()/2), y = player.y, img = bulletImg, gunSound:play() }
@@ -178,11 +179,19 @@ end
   love.graphics.draw(ground,0,groundScroll,0,1,1,0,600)
   love.graphics.draw(User_interface,0,0,0,1,1,0,0)
 local spriteNum = math.floor(animation.currentTime / animation.duration * #animation.quads) + 1
-        love.graphics.draw(animation.spriteSheet, animation.quads[spriteNum], 200, 200, 0, 1)
+        love.graphics.draw(animation.spriteSheet, animation.quads[spriteNum], 100, 100, 0, 1)
 
 local spriteNum = math.floor(animation.currentTime / animation.duration * #animThrust.quads) + 1
         love.graphics.draw(animThrust.spriteSheet, animThrust.quads[spriteNum], (player.x), (player.y+25), 0, 1)
+
+local spriteNum = math.floor(animation.currentTime / animation.duration * #animExplosion.quads) + 1
+        love.graphics.draw(animExplosion.spriteSheet, animExplosion.quads[spriteNum], (player.x), (player.y), 0, 1)
         love.graphics.print("SCORE: " .. tostring(score), 417, 110)
+
+local spriteNum = math.floor(animation.currentTime / animation.duration * #animBaddySpin.quads) + 1
+        love.graphics.draw(animBaddySpin.spriteSheet, animBaddySpin.quads[spriteNum],200 ,100 , 0, 1)
+        love.graphics.print("SCORE: " .. tostring(score), 417, 110)
+
 end
 function newAnimation(image, width, height, duration)
     local animation = {}

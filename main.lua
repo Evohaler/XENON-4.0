@@ -185,7 +185,7 @@ local spriteNum = math.floor(animation.currentTime / animation.duration * #animT
         love.graphics.draw(animThrust.spriteSheet, animThrust.quads[spriteNum], (player.x), (player.y+25), 0, 1)
 
 local spriteNum = math.floor(animation.currentTime / animation.duration * #animExplosion.quads) + 1
-        love.graphics.draw(animExplosion.spriteSheet, animExplosion.quads[spriteNum], (player.x), (player.y), 0, 1)
+        love.graphics.draw(animExplosion.spriteSheet, animExplosion.quads[spriteNum], 300, 100, 0, 1)
         love.graphics.print("SCORE: " .. tostring(score), 417, 110)
 
 local spriteNum = math.floor(animation.currentTime / animation.duration * #animBaddySpin.quads) + 1

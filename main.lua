@@ -148,15 +148,12 @@ end
 	-- remove all our bullets and enemies from screen
 	bullets = {}
 	enemies = {}
-
 	-- reset timers
 	canShootTimer = canShootTimerMax
 	createEnemyTimer = createEnemyTimerMax
-
 	-- move player back to default position
 	player.x = 300
 	player.y = 500
-
 	-- reset our game state
 	score = 0
 	isAlive = true
@@ -165,7 +162,7 @@ end
 
 function love.draw(dt)
 
-    love.graphics.draw(background,0,backgroundScroll,0,1,1,0,600)
+  love.graphics.draw(background,0,backgroundScroll,0,1,1,0,600)
   if isAlive then
     love.graphics.draw(player.img, player.x, player.y)
   else
@@ -184,22 +181,18 @@ local spriteNum = math.floor(animation.currentTime / animation.duration * #anima
 
   local spriteNum = math.floor(animation.currentTime / animation.duration * #animThrust.quads) + 1
         love.graphics.draw(animThrust.spriteSheet, animThrust.quads[spriteNum], (player.x), (player.y+25), 0, 1)
+        love.graphics.print("SCORE: " .. tostring(score), 417, 110)
 end
-
-
 function newAnimation(image, width, height, duration)
     local animation = {}
     animation.spriteSheet = image;
     animation.quads = {};
-
     for y = 0, image:getHeight() - height, height do
         for x = 0, image:getWidth() - width, width do
             table.insert(animation.quads, love.graphics.newQuad(x, y, width, height, image:getDimensions()))
         end
     end
-
     animation.duration = duration or 1
     animation.currentTime = 0
-
     return animation
 end

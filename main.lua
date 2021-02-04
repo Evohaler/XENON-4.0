@@ -11,7 +11,6 @@ end
 User_interface = love.graphics.newImage('Sprites/XenonUI.png')
 isAlive = true
 score = 0
-
 createEnemyTimerMax = 0.4
 createEnemyTimer = createEnemyTimerMax
 enemyImg = nil -- Like other images we'll pull this in during out love.load functio
@@ -35,7 +34,9 @@ BACKGROUND_LOOP = 595
 ground = love.graphics.newImage('Sprites/Xenon_wall1200.png')
 groundScroll = 0
 GROUND_SCROLL_SPEED = 60
-
+--sound
+gunSound = love.audio.newSource("Audio/LazerBlast.wav", "static")
+explosionSound =love.audio.newSource("Audio/Eplosion.wav", "static")
 function love.load(arg)
   --Animation
   animation = newAnimation(love.graphics.newImage("Sprites/powerup.png"), 30, 30, 0.5)
@@ -47,18 +48,18 @@ function love.load(arg)
 end
 
 function love.update(dt)
-  --Animation
+--Animation
         animation.currentTime = animation.currentTime + dt
       if animation.currentTime >= animation.duration then
         animation.currentTime = animation.currentTime - animation.duration
 end
-  -- Parallex
+-- Parallex
     backgroundScroll = (backgroundScroll + BACKGROUND_SCROLL_SPEED * dt)
       % BACKGROUND_LOOP
     groundScroll = (groundScroll + GROUND_SCROLL_SPEED *dt)
       % BACKGROUND_LOOP
 
-  -- I always start with an easy way to exit the game
+-- Game quit
   if love.keyboard.isDown('escape') then
     love.event.push('quit')
   end
@@ -79,8 +80,7 @@ end
 if enemy.y > 720 then -- remove enemies when they pass off the screen
   table.remove(enemies, i)
 end
--- run our collision detection
--- Since there will be fewer enemies on screen than bullets we'll loop them first
+
 -- Also, we need to see if the enemies hit our player
 for i, enemy in ipairs(enemies) do
 	for j, bullet in ipairs(bullets) do
@@ -88,32 +88,33 @@ for i, enemy in ipairs(enemies) do
 			table.remove(bullets, j)
 			table.remove(enemies, i)
 			score = score + 1
+      explosionSound:play()
 		end
 	end
-
+end
 	if CheckCollision(enemy.x, enemy.y, enemy.img:getWidth(), enemy.img:getHeight(), player.x, player.y, player.img:getWidth(), player.img:getHeight())
 	 and isAlive then
 		   table.remove(enemies, i)
 		   isAlive = false
-	    end
+       explosionSound:play()
+	   end
   end
-end
+
   -- Time out how far apart our shots can be.
       canShootTimer = canShootTimer - (1 * dt)
   if canShootTimer < 0 then
       canShoot = true
   end
+
 --Player control
   if love.keyboard.isDown('space') and canShoot then
-	   -- Create some bullets
-	 newBullet = { x = player.x + (player.img:getWidth()/2), y = player.y, img = bulletImg }
-	  table.insert(bullets, newBullet)
-	   canShoot = false
+	      newBullet = { x = player.x + (player.img:getWidth()/2), y = player.y, img = bulletImg, gunSound:play() }
+	       table.insert(bullets, newBullet)
+	    canShoot = false
 	    canShootTimer = canShootTimerMax
   end
   for i, bullet in ipairs(bullets) do
 	   bullet.y = bullet.y - (250 * dt)
-
      if bullet.y < 0 then -- remove bullets when they pass off the screen
 		     table.remove(bullets, i)
 	   end
@@ -166,7 +167,7 @@ function love.draw(dt)
   if isAlive then
     love.graphics.draw(player.img, player.x, player.y)
   else
-    love.graphics.print("Press 'R' to restart", love.graphics:getWidth()/2-50, love.graphics:getHeight()/2-10)
+    love.graphics.print("Press 'R' to restart", love.graphics:getWidth()/2-150, love.graphics:getHeight()/2-10,0,2,2)
   end
   for i, bullet in ipairs(bullets) do
     love.graphics.draw(bullet.img, bullet.x, bullet.y)
@@ -179,7 +180,7 @@ end
 local spriteNum = math.floor(animation.currentTime / animation.duration * #animation.quads) + 1
         love.graphics.draw(animation.spriteSheet, animation.quads[spriteNum], 200, 200, 0, 1)
 
-  local spriteNum = math.floor(animation.currentTime / animation.duration * #animThrust.quads) + 1
+local spriteNum = math.floor(animation.currentTime / animation.duration * #animThrust.quads) + 1
         love.graphics.draw(animThrust.spriteSheet, animThrust.quads[spriteNum], (player.x), (player.y+25), 0, 1)
         love.graphics.print("SCORE: " .. tostring(score), 417, 110)
 end

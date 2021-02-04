@@ -37,12 +37,21 @@ groundScroll = 0
 GROUND_SCROLL_SPEED = 60
 
 function love.load(arg)
+  --Animation
+  animation = newAnimation(love.graphics.newImage("Sprites/powerup.png"), 30, 30, 0.5)
+  animThrust = newAnimation(love.graphics.newImage("Sprites/RocketPlume.png"), 30, 30, 0.5)
+  --player
   player.img = love.graphics.newImage('Sprites/XenonShip.png')
   bulletImg = love.graphics.newImage('Sprites/Bolt.png')
   enemyImg = love.graphics.newImage('Sprites/Baddie1.png')
 end
 
 function love.update(dt)
+  --Animation
+        animation.currentTime = animation.currentTime + dt
+      if animation.currentTime >= animation.duration then
+        animation.currentTime = animation.currentTime - animation.duration
+end
   -- Parallex
     backgroundScroll = (backgroundScroll + BACKGROUND_SCROLL_SPEED * dt)
       % BACKGROUND_LOOP
@@ -170,4 +179,27 @@ function love.draw(dt)
 end
   love.graphics.draw(ground,0,groundScroll,0,1,1,0,600)
   love.graphics.draw(User_interface,0,0,0,1,1,0,0)
+local spriteNum = math.floor(animation.currentTime / animation.duration * #animation.quads) + 1
+        love.graphics.draw(animation.spriteSheet, animation.quads[spriteNum], 200, 200, 0, 1)
+
+  local spriteNum = math.floor(animation.currentTime / animation.duration * #animThrust.quads) + 1
+        love.graphics.draw(animThrust.spriteSheet, animThrust.quads[spriteNum], (player.x), (player.y+25), 0, 1)
+end
+
+
+function newAnimation(image, width, height, duration)
+    local animation = {}
+    animation.spriteSheet = image;
+    animation.quads = {};
+
+    for y = 0, image:getHeight() - height, height do
+        for x = 0, image:getWidth() - width, width do
+            table.insert(animation.quads, love.graphics.newQuad(x, y, width, height, image:getDimensions()))
+        end
+    end
+
+    animation.duration = duration or 1
+    animation.currentTime = 0
+
+    return animation
 end

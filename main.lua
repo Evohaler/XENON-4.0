@@ -37,6 +37,11 @@ ground = love.graphics.newImage('Sprites/Xenon_wall1200.png')
 groundScroll = 0
 GROUND_SCROLL_SPEED = 60
 --sound
+baddySpin = love.graphics.newImage('Sprites/BaddySpin.png')
+baddyScroll = 0
+baddy_Scroll_Speed = 40
+baddyLoop = 600
+
 gunSound = love.audio.newSource("Audio/LazerBlast.wav", "static")
 explosionSound =love.audio.newSource("Audio/Eplosion.wav", "static")
 function love.load(arg)
@@ -62,6 +67,8 @@ end
       % BACKGROUND_LOOP
     groundScroll = (groundScroll + GROUND_SCROLL_SPEED *dt)
       % BACKGROUND_LOOP
+    baddyScroll =(baddyScroll + baddy_Scroll_Speed *dt)
+      % baddyLoop
 
 -- Game quit
   if love.keyboard.isDown('escape') then
@@ -165,6 +172,7 @@ end
 function love.draw(dt)
 
   love.graphics.draw(background,0,backgroundScroll,0,1,1,0,600)
+  --love.graphics.draw(baddySpin,300,backgroundScroll,0,10,0,0,400)
   if isAlive then
     love.graphics.draw(player.img, player.x, player.y)
   else
@@ -177,7 +185,6 @@ function love.draw(dt)
 	love.graphics.draw(enemy.img, enemy.x, enemy.y)
 end
   love.graphics.draw(ground,0,groundScroll,0,1,1,0,600)
-  love.graphics.draw(User_interface,0,0,0,1,1,0,0)
 local spriteNum = math.floor(animation.currentTime / animation.duration * #animation.quads) + 1
         love.graphics.draw(animation.spriteSheet, animation.quads[spriteNum], 100, 100, 0, 1)
 
@@ -189,7 +196,8 @@ local spriteNum = math.floor(animation.currentTime / animation.duration * #animE
         love.graphics.print("SCORE: " .. tostring(score), 417, 110)
 
 local spriteNum = math.floor(animation.currentTime / animation.duration * #animBaddySpin.quads) + 1
-        love.graphics.draw(animBaddySpin.spriteSheet, animBaddySpin.quads[spriteNum],200 ,100 , 0, 1)
+        love.graphics.draw(animBaddySpin.spriteSheet, animBaddySpin.quads[spriteNum],200,baddyScroll,-1)
+        love.graphics.draw(User_interface,0,0,0,1,1,0,0)
         love.graphics.print("SCORE: " .. tostring(score), 417, 110)
 
 end

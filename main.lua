@@ -41,10 +41,16 @@ baddySpin = love.graphics.newImage('Sprites/BaddySpin.png')
 baddyScroll = 0
 baddy_Scroll_Speed = 40
 baddyLoop = 600
+--for snake
+local y = 50
+local x = -180
 
 gunSound = love.audio.newSource("Audio/LazerBlast.wav", "static")
 explosionSound =love.audio.newSource("Audio/Eplosion.wav", "static")
 function love.load(arg)
+  --For Snake
+  local sprites = {"Sprites/BaddySnakeBody.png","Sprites/BaddySnake.png"}
+    image = love.graphics.newArrayImage(sprites)
   --Animation
   animation = newAnimation(love.graphics.newImage("Sprites/powerup.png"), 30, 30, 0.5)
   animThrust = newAnimation(love.graphics.newImage("Sprites/RocketPlume.png"), 30, 30, 0.5)
@@ -57,6 +63,15 @@ function love.load(arg)
 end
 
 function love.update(dt)
+-- For Snake
+y = y + 1
+if y > 610 then
+  y = - 1
+end
+x = x + 2
+if x > 30 then
+  x = -180
+end
 --Animation
         animation.currentTime = animation.currentTime + dt
       if animation.currentTime >= animation.duration then
@@ -173,6 +188,15 @@ function love.draw(dt)
 
   love.graphics.draw(background,0,backgroundScroll,0,1,1,0,600)
   --love.graphics.draw(baddySpin,300,backgroundScroll,0,10,0,0,400)
+  love.graphics.drawLayer(image, 1, x,  y)
+  love.graphics.drawLayer(image, 1, x+25, y)
+  love.graphics.drawLayer(image, 1, x+50, y)
+  love.graphics.drawLayer(image, 1, x+75, y)
+  love.graphics.drawLayer(image, 1, x+100, y)
+  love.graphics.drawLayer(image, 1, x+125, y)
+  love.graphics.drawLayer(image, 1, x+150, y)
+  love.graphics.drawLayer(image, 2, x+175, y)
+
   if isAlive then
     love.graphics.draw(player.img, player.x, player.y)
   else

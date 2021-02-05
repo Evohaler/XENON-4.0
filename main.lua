@@ -45,9 +45,14 @@ baddyLoop = 600
 local y = 50
 local x = -180
 
+music = love.audio.newSource("Audio/XenonMusic.wav","static")
 gunSound = love.audio.newSource("Audio/LazerBlast.wav", "static")
 explosionSound =love.audio.newSource("Audio/Eplosion.wav", "static")
 function love.load(arg)
+  --music
+
+  music:setLooping(true)
+  music:play()
   --For Snake
   local sprites = {"Sprites/BaddySnakeBody.png","Sprites/BaddySnake.png"}
     image = love.graphics.newArrayImage(sprites)

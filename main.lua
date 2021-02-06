@@ -44,7 +44,7 @@ baddyLoop = 600
 --for snake
 local y = 50
 local x = -180
-
+local speed = 1
 music = love.audio.newSource("Audio/XenonMusic.wav","static")
 gunSound = love.audio.newSource("Audio/LazerBlast.wav", "static")
 explosionSound =love.audio.newSource("Audio/Eplosion.wav", "static")
@@ -54,7 +54,6 @@ function love.load(arg)
   music:setVolume(0.3)
   music:setLooping(true)
   music:play()
-
 
   --For Snake
   local sprites = {"Sprites/BaddySnakeBody.png","Sprites/BaddySnake.png"}
@@ -72,13 +71,14 @@ end
 
 function love.update(dt)
 -- For Snake movement
-y = y + 1
+    y = y + 1 + speed
 if y > 610 then
-  y = - 1
+    y = - 1
 end
-x = x + 2
-if x > 30 then
-  x = -180
+
+    x = x + 2 + speed
+if x > 20 then
+    x = -x + 2 + speed
 end
 --Animation
         animation.currentTime = animation.currentTime + dt
@@ -125,13 +125,21 @@ for i, enemy in ipairs(enemies) do
 		end
 	end
 end
+
 	if CheckCollision(enemy.x, enemy.y, enemy.img:getWidth(), enemy.img:getHeight(), player.x, player.y, player.img:getWidth(), player.img:getHeight())
 	 and isAlive then
 		   table.remove(enemies, i)
 		   isAlive = false
        explosionSound:play()
-	   end
   end
+-- bad player snake collision
+  if CheckCollision(x, y, image:getWidth(), image:getHeight(), player.x, player.y, player.img:getWidth(), player.img:getHeight())
+   and isAlive then
+       table.remove(enemies, i)
+       isAlive = false
+       explosionSound:play()
+  end
+end
   -- Time out how far apart our shots can be.
       canShootTimer = canShootTimer - (1 * dt)
   if canShootTimer < 0 then
@@ -189,9 +197,8 @@ end
 	-- reset our game state
 	score = 0
   isAlive = true
+  end
 end
-end
-
 function love.draw(dt)
 
   love.graphics.draw(background,0,backgroundScroll,0,1,1,0,600)

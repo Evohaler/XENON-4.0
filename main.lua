@@ -47,8 +47,8 @@ gunSound = love.audio.newSource("Audio/LazerBlast.wav", "static")
 explosionSound =love.audio.newSource("Audio/Eplosion.wav", "static")
 
 Snake_x = 0
-snake_y = 0
-
+Snake_y = 0
+xdirection = 0
 function love.load(arg)
   --music
 
@@ -72,19 +72,18 @@ end
 
 function love.update(dt)
 -- For Snake movement
- local xspeed=10
- local yspeed=10
 
-    Snake_y = snake_y + 1 + yspeed
-if snake_y > 610 then
-    Snake_y = - 1
+
+  Snake_y = Snake_y + 2
+if Snake_y > 610 then
+  Snake_y = - 1
 end
 
-if (Snake_x >= 20) or (Snake_x == 0) then
-    xspeed = -xspeed
-end
-    Snake_x = Snake_x + 2 * xspeed
+if Snake_x=Snake_x+(2*xdirection)
+if (Snake_x==20) or (Snake_x<-180) then
+     xdirection = xdirection * -1
 
+end
 --Animation
    animation.currentTime = animation.currentTime + dt
 if animation.currentTime >= animation.duration then

@@ -42,12 +42,13 @@ baddyScroll = 0
 baddy_Scroll_Speed = 40
 baddyLoop = 600
 --for snake
-local y = 50
-local x = -180
-local speed = 1
 music = love.audio.newSource("Audio/XenonMusic.wav","static")
 gunSound = love.audio.newSource("Audio/LazerBlast.wav", "static")
 explosionSound =love.audio.newSource("Audio/Eplosion.wav", "static")
+
+Snake_x = 0
+snake_y = 0
+
 function love.load(arg)
   --music
 
@@ -71,19 +72,23 @@ end
 
 function love.update(dt)
 -- For Snake movement
-    y = y + 1 + speed
-if y > 610 then
-    y = - 1
+ local xspeed=10
+ local yspeed=10
+
+    Snake_y = snake_y + 1 + yspeed
+if snake_y > 610 then
+    Snake_y = - 1
 end
 
-    x = x + 2 + speed
-if x > 20 then
-    x = -x + 2 + speed
+if (Snake_x >= 20) or (Snake_x == 0) then
+    xspeed = -xspeed
 end
+    Snake_x = Snake_x + 2 * xspeed
+
 --Animation
-        animation.currentTime = animation.currentTime + dt
-      if animation.currentTime >= animation.duration then
-        animation.currentTime = animation.currentTime - animation.duration
+   animation.currentTime = animation.currentTime + dt
+if animation.currentTime >= animation.duration then
+   animation.currentTime = animation.currentTime - animation.duration
 end
 -- Parallex
     backgroundScroll = (backgroundScroll + BACKGROUND_SCROLL_SPEED * dt)
@@ -94,13 +99,13 @@ end
       % baddyLoop
 
 -- Game quit
-  if love.keyboard.isDown('escape') then
+if love.keyboard.isDown('escape') then
       love.event.push('quit')
-  end
+end
   -- Time out enemy creation
-    createEnemyTimer = createEnemyTimer - (1 * dt)
-    if createEnemyTimer < 0 then
-	     createEnemyTimer = createEnemyTimerMax
+   createEnemyTimer = createEnemyTimer - (1 * dt)
+if createEnemyTimer < 0 then
+	 createEnemyTimer = createEnemyTimerMax
 	-- Create an enemy
 	randomNumber = math.random(10, love.graphics.getWidth() - 10)
 	newEnemy = { x = randomNumber, y = -10, img = enemyImg }
@@ -133,7 +138,7 @@ end
        explosionSound:play()
   end
 -- bad player snake collision
-  if CheckCollision(x, y, image:getWidth(), image:getHeight(), player.x, player.y, player.img:getWidth(), player.img:getHeight())
+  if CheckCollision(Snake_x, snake_y, image:getWidth(), image:getHeight(), player.x, player.y, player.img:getWidth(), player.img:getHeight())
    and isAlive then
        table.remove(enemies, i)
        isAlive = false
@@ -197,20 +202,20 @@ end
 	-- reset our game state
 	score = 0
   isAlive = true
-  end
+end
 end
 function love.draw(dt)
 
   love.graphics.draw(background,0,backgroundScroll,0,1,1,0,600)
   --love.graphics.draw(baddySpin,300,backgroundScroll,0,10,0,0,400)
-  love.graphics.drawLayer(image, 1, x,  y)
-  love.graphics.drawLayer(image, 1, x+25, y)
-  love.graphics.drawLayer(image, 1, x+50, y)
-  love.graphics.drawLayer(image, 1, x+75, y)
-  love.graphics.drawLayer(image, 1, x+100, y)
-  love.graphics.drawLayer(image, 1, x+125, y)
-  love.graphics.drawLayer(image, 1, x+150, y)
-  love.graphics.drawLayer(image, 2, x+175, y)
+  love.graphics.drawLayer(image, 1, Snake_x, snake_y)
+  love.graphics.drawLayer(image, 1, Snake_x+25, snake_y)
+  love.graphics.drawLayer(image, 1, Snake_x+50, snake_y)
+  love.graphics.drawLayer(image, 1, Snake_x+75, snake_y)
+  love.graphics.drawLayer(image, 1, Snake_x+100, snake_y)
+  love.graphics.drawLayer(image, 1, Snake_x+125, snake_y)
+  love.graphics.drawLayer(image, 1, Snake_x+150, snake_y)
+  love.graphics.drawLayer(image, 2, Snake_x+175, snake_y)
 
   if isAlive then
     love.graphics.draw(player.img, player.x, player.y)

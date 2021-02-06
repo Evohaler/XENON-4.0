@@ -50,7 +50,7 @@ gunSound = love.audio.newSource("Audio/LazerBlast.wav", "static")
 explosionSound =love.audio.newSource("Audio/Eplosion.wav", "static")
 function love.load(arg)
   --music
-
+  music:setVolume(0.3)
   music:setLooping(true)
   music:play()
   --For Snake

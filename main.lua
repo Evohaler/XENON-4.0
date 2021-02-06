@@ -50,9 +50,12 @@ gunSound = love.audio.newSource("Audio/LazerBlast.wav", "static")
 explosionSound =love.audio.newSource("Audio/Eplosion.wav", "static")
 function love.load(arg)
   --music
+
   music:setVolume(0.3)
   music:setLooping(true)
   music:play()
+
+
   --For Snake
   local sprites = {"Sprites/BaddySnakeBody.png","Sprites/BaddySnake.png"}
     image = love.graphics.newArrayImage(sprites)
@@ -68,7 +71,7 @@ function love.load(arg)
 end
 
 function love.update(dt)
--- For Snake
+-- For Snake movement
 y = y + 1
 if y > 610 then
   y = - 1
@@ -92,7 +95,7 @@ end
 
 -- Game quit
   if love.keyboard.isDown('escape') then
-    love.event.push('quit')
+      love.event.push('quit')
   end
   -- Time out enemy creation
     createEnemyTimer = createEnemyTimer - (1 * dt)
@@ -135,7 +138,7 @@ end
       canShoot = true
   end
 --Player control
-  if love.keyboard.isDown('space') and canShoot then
+  if love.keyboard.isDown('space') and canShoot and isAlive then
 	      newBullet = { x = player.x + (player.img:getWidth()/2), y = player.y, img = bulletImg, gunSound:play() }
 	       table.insert(bullets, newBullet)
 	    canShoot = false
@@ -185,7 +188,7 @@ end
 	player.y = 500
 	-- reset our game state
 	score = 0
-	isAlive = true
+  isAlive = true
 end
 end
 
@@ -217,9 +220,10 @@ end
 local spriteNum = math.floor(animation.currentTime / animation.duration * #animation.quads) + 1
         love.graphics.draw(animation.spriteSheet, animation.quads[spriteNum], 100, 100, 0, 1)
 
+if isAlive then
 local spriteNum = math.floor(animation.currentTime / animation.duration * #animThrust.quads) + 1
         love.graphics.draw(animThrust.spriteSheet, animThrust.quads[spriteNum], (player.x), (player.y+25), 0, 1)
-
+end
 local spriteNum = math.floor(animation.currentTime / animation.duration * #animExplosion.quads) + 1
         love.graphics.draw(animExplosion.spriteSheet, animExplosion.quads[spriteNum], 300, 100, 0, 1)
         love.graphics.print("SCORE: " .. tostring(score), 417, 110)

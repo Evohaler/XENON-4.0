@@ -46,9 +46,10 @@ music = love.audio.newSource("Audio/XenonMusic.wav","static")
 gunSound = love.audio.newSource("Audio/LazerBlast.wav", "static")
 explosionSound =love.audio.newSource("Audio/Eplosion.wav", "static")
 
-Snake_x = 0
 Snake_y = 0
-xdirection = 0
+Snake_x = -180
+xdirection = 1
+ydirection = 1
 function love.load(arg)
   --music
 
@@ -73,16 +74,13 @@ end
 function love.update(dt)
 -- For Snake movement
 
-
-  Snake_y = Snake_y + 2
+   Snake_y = Snake_y + 2
 if Snake_y > 610 then
-  Snake_y = - 1
+   Snake_y = - 1
 end
-
-if Snake_x=Snake_x+(2*xdirection)
-if (Snake_x==20) or (Snake_x<-180) then
+     Snake_x=Snake_x+(2*xdirection)
+if  (Snake_x==20) or (Snake_x<-180) then
      xdirection = xdirection * -1
-
 end
 --Animation
    animation.currentTime = animation.currentTime + dt
@@ -207,14 +205,14 @@ function love.draw(dt)
 
   love.graphics.draw(background,0,backgroundScroll,0,1,1,0,600)
   --love.graphics.draw(baddySpin,300,backgroundScroll,0,10,0,0,400)
-  love.graphics.drawLayer(image, 1, Snake_x, snake_y)
-  love.graphics.drawLayer(image, 1, Snake_x+25, snake_y)
-  love.graphics.drawLayer(image, 1, Snake_x+50, snake_y)
-  love.graphics.drawLayer(image, 1, Snake_x+75, snake_y)
-  love.graphics.drawLayer(image, 1, Snake_x+100, snake_y)
-  love.graphics.drawLayer(image, 1, Snake_x+125, snake_y)
-  love.graphics.drawLayer(image, 1, Snake_x+150, snake_y)
-  love.graphics.drawLayer(image, 2, Snake_x+175, snake_y)
+  love.graphics.drawLayer(image, 1, Snake_x, Snake_y)
+  love.graphics.drawLayer(image, 1, Snake_x+25, Snake_y)
+  love.graphics.drawLayer(image, 1, Snake_x+50, Snake_y)
+  love.graphics.drawLayer(image, 1, Snake_x+75, Snake_y)
+  love.graphics.drawLayer(image, 1, Snake_x+100, Snake_y)
+  love.graphics.drawLayer(image, 1, Snake_x+125, Snake_y)
+  love.graphics.drawLayer(image, 1, Snake_x+150, Snake_y)
+  love.graphics.drawLayer(image, 2, Snake_x+175, Snake_y)
 
   if isAlive then
     love.graphics.draw(player.img, player.x, player.y)

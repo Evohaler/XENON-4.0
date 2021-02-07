@@ -8,6 +8,14 @@ function CheckCollision(x1,y1,w1,h1, x2,y2,w2,h2)
          y1 < y2+h2 and
          y2 < y1+h1
 end
+
+function MyCollision(Snake_x,Snake_y,Snake_w,Snake_h,x1,y1,w1,h1)
+  return x1 < Snake_x+Snake_w and
+         Snake_x < x1+w1 and
+         y1 < Snake_y+Snake_h and
+         Snake_y < y1+h1
+end
+
 User_interface = love.graphics.newImage('Sprites/XenonUI.png')
 isAlive = true
 score = 0
@@ -48,6 +56,8 @@ explosionSound =love.audio.newSource("Audio/Eplosion.wav", "static")
 
 Snake_y = 0
 Snake_x = -180
+Snake_w = 30
+Snake_h = 30
 xdirection = 1
 ydirection = 1
 function love.load(arg)
@@ -58,15 +68,15 @@ function love.load(arg)
   music:play()
 
   --For Snake
-  local sprites = {"Sprites/BaddySnakeBody.png","Sprites/BaddySnake.png"}
-    image = love.graphics.newArrayImage(sprites)
+  sprites = {"Sprites/BaddySnakeBody.png","Sprites/BaddySnake.png"}
+  image = love.graphics.newArrayImage(sprites)
   --Animation
   animation = newAnimation(love.graphics.newImage("Sprites/powerup.png"), 30, 30, 0.5)
   animThrust = newAnimation(love.graphics.newImage("Sprites/RocketPlume.png"), 30, 30, 0.5)
   animExplosion =newAnimation(love.graphics.newImage("Sprites/Explosion.png"), 30, 30, 0.5)
   animBaddySpin =newAnimation(love.graphics.newImage("Sprites/BaddySpin.png"), 30, 30, 0.5)
   --player
-  player.img = love.graphics.newImage('Sprites/XenonShip.png')
+  playerImg = love.graphics.newImage('Sprites/XenonShip.png')
   bulletImg = love.graphics.newImage('Sprites/Bolt.png')
   enemyImg = love.graphics.newImage('Sprites/Baddie1.png')
 end
@@ -134,13 +144,11 @@ end
 		   isAlive = false
        explosionSound:play()
   end
--- bad player snake collision
-  if CheckCollision(Snake_x, snake_y, image:getWidth(), image:getHeight(), player.x, player.y, player.img:getWidth(), player.img:getHeight())
-   and isAlive then
-       table.remove(enemies, i)
-       isAlive = false
-       explosionSound:play()
-  end
+if MyCollision(Snake_x,Snake_y,enemy.img:getWidth(), enemy.img:getHeight(), player.x, player.y, player.img:getWidth(), player.img:getHeight())
+  and isAlive then
+      isAlive = false
+      explosionSound:play()
+end
 end
   -- Time out how far apart our shots can be.
       canShootTimer = canShootTimer - (1 * dt)
@@ -148,6 +156,16 @@ end
       canShoot = true
   end
 --Player control
+  if player.y > 570 then
+     player.y = 560
+  end
+  if player.x >= 350 then
+     player.x = 340
+  end
+  if player.x < 10 then
+     player.x = 20
+  end
+
   if love.keyboard.isDown('space') and canShoot and isAlive then
 	      newBullet = { x = player.x + (player.img:getWidth()/2), y = player.y, img = bulletImg, gunSound:play() }
 	       table.insert(bullets, newBullet)

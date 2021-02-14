@@ -24,12 +24,17 @@ createEnemyTimer = createEnemyTimerMax
 enemyImg = nil -- Like other images we'll pull this in during out love.load functio
 enemies = {} -- array of current enemies on screen
 
+baddySpinImg = nil
+baddySpin = {}
+
 canShoot = true
 canShootTimerMax = 0.2
 canShootTimer = canShootTimerMax
 
 bulletImg = nil
 bullets = {} -- array of current bullets being drawn and updated
+bulletCollision = false
+
 
 player ={x=200, y=400, speed = 150, img=nil}
 --space
@@ -42,7 +47,7 @@ ground = love.graphics.newImage('Sprites/Xenon_wall1200.png')
 groundScroll = 0
 GROUND_SCROLL_SPEED = 60
 --sound
-baddySpin = love.graphics.newImage('Sprites/BaddySpin.png')
+
 baddyScroll = 0
 baddy_Scroll_Speed = 40
 baddyLoop = 600
@@ -59,26 +64,30 @@ Snake_h = 30
 xdirection = 1
 ydirection = 1
 function love.load(arg)------------------------------------------------------
+    love.graphics.setDefaultFilter('nearest', 'nearest')
+
   --music
 
   music:setVolume(0.3)
   music:setLooping(true)
   music:play()
 
-  --For Snake
-  sprites = {"Sprites/BaddySnakeBody.png","Sprites/BaddySnake.png"}
-  image = love.graphics.newArrayImage(sprites)
   --Animation
   animUi = newAnimation(love.graphics.newImage("Sprites/DashText.png"), 30, 30, 0.5)
   animSin = newAnimation(love.graphics.newImage("Sprites/SingW.png"), 30, 30, 0.5)
   animation = newAnimation(love.graphics.newImage("Sprites/powerup.png"), 30, 30, 0.5)
   animThrust = newAnimation(love.graphics.newImage("Sprites/RocketPlume.png"), 30, 30, 0.5)
   animExplode =newAnimation(love.graphics.newImage("Sprites/Explosion.png"), 30, 30, 0.5)
-  animBaddySpin =newAnimation(love.graphics.newImage("Sprites/BaddySpin.png"), 30, 30, 0.5)
+  animBaddySpin =newAnimation(love.graphics.newImage("Sprites/BaddySpin.png"), 30, 30)
+  --Baddy
+  enemyImg = love.graphics.newImage('Sprites/Baddie1.png')
+  --For Snake
+  sprites = {"Sprites/BaddySnakeBody.png","Sprites/BaddySnake.png"}
+  image = love.graphics.newArrayImage(sprites)
   --player
   playerImg = love.graphics.newImage('Sprites/XenonShip.png')
   bulletImg = love.graphics.newImage('Sprites/Bolt.png')
-  enemyImg = love.graphics.newImage('Sprites/Baddie1.png')
+
   UIImg = love.graphics.newImage('Sprites/AnimCockpit.png')
 end
 
@@ -88,19 +97,19 @@ function love.update(dt)------------------------------------------------------
 -- For Snake movement
 
 
-   Snake_y = Snake_y + 2
-if Snake_y > 610 then
-   Snake_y = - 1
-end
+    Snake_y = Snake_y + 2
+    if Snake_y > 610 then
+      Snake_y = - 1
+    end
      Snake_x=Snake_x+(2*xdirection)
-if  (Snake_x==20) or (Snake_x<-180) then
+     if  (Snake_x==20) or (Snake_x<-180) then
      xdirection = xdirection * -1
-end
+    end
 --Animation
-   animation.currentTime = animation.currentTime + dt
-if animation.currentTime >= animation.duration then
-   animation.currentTime = animation.currentTime - animation.duration
-end
+    animation.currentTime = animation.currentTime + dt
+    if animation.currentTime >= animation.duration then
+      animation.currentTime = animation.currentTime - animation.duration
+    end
 -- Parallex
     backgroundScroll = (backgroundScroll + BACKGROUND_SCROLL_SPEED * dt)
       % BACKGROUND_LOOP
@@ -110,49 +119,52 @@ end
       % baddyLoop
 
 -- Game quit
-if love.keyboard.isDown('escape') then
-      love.event.push('quit')
-end
-  -- Time out enemy creation
-   createEnemyTimer = createEnemyTimer - (1 * dt)
-if createEnemyTimer < 0 then
-	 createEnemyTimer = createEnemyTimerMax
-	-- Create an enemy
-	randomNumber = math.random(10, love.graphics.getWidth() - 10)
-	newEnemy = { x = randomNumber, y = -10, img = enemyImg }
-	table.insert(enemies, newEnemy)
-end
--- update the positions of enemies
-  for i, enemy in ipairs(enemies) do
-    enemy.y = enemy.y + (200 * dt)
+    if love.keyboard.isDown('escape') then
+        love.event.push('quit')
+    end
+-- Time out enemy creation
+      createEnemyTimer = createEnemyTimer - (1 * dt)
+    if createEnemyTimer < 0 then
+	       createEnemyTimer = createEnemyTimerMax
+-- Create an enemy
+	   randomNumber = math.random(10, love.graphics.getWidth() - 10)
+	    newEnemy = { x = randomNumber, y = -10, img = enemyImg }
+	     table.insert(enemies, newEnemy)
 
-if enemy.y > 720 then -- remove enemies when they pass off the screen
-  table.remove(enemies, i)
-end
+    end
+-- update the positions of enemies
+    for i, enemy in ipairs(enemies) do
+      enemy.y = enemy.y + (200 * dt)
+
+    if enemy.y > 610 then -- remove enemies when they pass off the screen
+      table.remove(enemies, i)
+    end
 
 -- Also, we need to see if the enemies hit our player
-for i, enemy in ipairs(enemies) do
-	for j, bullet in ipairs(bullets) do
-		if CheckCollision(enemy.x, enemy.y, enemy.img:getWidth(), enemy.img:getHeight(), bullet.x, bullet.y, bullet.img:getWidth(), bullet.img:getHeight()) then
-			table.remove(bullets, j)
-			table.remove(enemies, i)
-			score = score + 1
-      explosionSound:play()
-		end
-	end
-end
+  for i, enemy in ipairs(enemies) do
+ 	 for j, bullet in ipairs(bullets) do
+		   if CheckCollision(enemy.x, enemy.y, enemy.img:getWidth(), enemy.img:getHeight(), bullet.x, bullet.y, bullet.img:getWidth(), bullet.img:getHeight()) then
+			      table.remove(bullets, j)
+			      table.remove(enemies, i)
+			       score = score + 1
+             explosionSound:play()
+             bulletCollision = true
+       end
+    end
+  end
+
 
 	if CheckCollision(enemy.x, enemy.y, enemy.img:getWidth(), enemy.img:getHeight(), player.x, player.y, player.img:getWidth(), player.img:getHeight())
-	 and isAlive then
-		   table.remove(enemies, i)
-		   isAlive = false
-       explosionSound:play()
+	   and isAlive then
+		     table.remove(enemies, i)
+		       isAlive = false
+           explosionSound:play()
   end
-if MyCollision(Snake_x,Snake_y,enemy.img:getWidth(), enemy.img:getHeight(), player.x, player.y, player.img:getWidth(), player.img:getHeight())
-  and isAlive then
-      isAlive = false
-      explosionSound:play()
-end
+  if MyCollision(Snake_x,Snake_y,Snake_w, Snake_h,player.x, player.y, player.img:getWidth(), player.img:getHeight())
+    and isAlive then
+        isAlive = false
+        explosionSound:play()
+  end
 end
   -- Time out how far apart our shots can be.
       canShootTimer = canShootTimer - (1 * dt)
@@ -160,8 +172,8 @@ end
       canShoot = true
   end
 --Player control
-  if player.y > 500 then
-     player.y = 490
+  if player.y > 490 then
+     player.y = 480
   end
   if player.x >= 350 then
      player.x = 340
@@ -212,6 +224,7 @@ end
 	-- remove all our bullets and enemies from screen
 	bullets = {}
 	enemies = {}
+  baddySpin = {}
 	-- reset timers
 	canShootTimer = canShootTimerMax
 	createEnemyTimer = createEnemyTimerMax
@@ -244,8 +257,10 @@ function love.draw(dt)----------------------------------------------------
   end
   for i, enemy in ipairs(enemies) do
 	love.graphics.draw(enemy.img, enemy.x, enemy.y)
-end
+  end
+
   love.graphics.draw(ground,0,groundScroll,0,1,1,0,600)
+
 local spriteNum = math.floor(animation.currentTime / animation.duration * #animation.quads) + 1
         love.graphics.draw(animation.spriteSheet, animation.quads[spriteNum], 100, 100, 0, 1)
 
@@ -253,9 +268,10 @@ if isAlive then
 local spriteNum = math.floor(animation.currentTime / animation.duration * #animThrust.quads) + 1
         love.graphics.draw(animThrust.spriteSheet, animThrust.quads[spriteNum], (player.x), (player.y+25), 0, 1)
 end
+if bulletCollision == true then
 local spriteNum = math.floor(animation.currentTime / animation.duration * #animExplode.quads) + 1
-        love.graphics.draw(animExplode.spriteSheet, animExplode.quads[spriteNum], 300, 100, 0, 1)
-
+        love.graphics.draw(animExplode.spriteSheet, animExplode.quads[spriteNum], (enemy.x), (enemy.y), 0, 1)
+end
 
 local spriteNum = math.floor(animation.currentTime / animation.duration * #animBaddySpin.quads) + 1
         love.graphics.draw(animBaddySpin.spriteSheet, animBaddySpin.quads[spriteNum],200,baddyScroll,-1)
@@ -263,9 +279,10 @@ local spriteNum = math.floor(animation.currentTime / animation.duration * #animB
 
 local spriteNum = math.floor(animation.currentTime / animation.duration * #animUi.quads) + 1
         love.graphics.draw(animUi.spriteSheet, animUi.quads[spriteNum],69,531,0,2,2,1)
+
 local spriteNum = math.floor(animation.currentTime / animation.duration * #animSin.quads) + 1
         love.graphics.draw(animSin.spriteSheet, animSin.quads[spriteNum],13,531,0,2,2,1)
-          love.graphics.print("KILLS: " .. tostring(score), 308, 552)
+        love.graphics.print("KILLS: " .. tostring(score), 308, 552)
 
 if isAlive then
             love.graphics.draw(player.img, player.x, player.y)

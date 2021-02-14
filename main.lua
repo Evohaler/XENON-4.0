@@ -93,8 +93,6 @@ function love.load(arg)------------------------------------------------------
   baddySpinImg = love.graphics.newImage('Sprites/BaddySpin.png')
 end
 
-
-
 function love.update(dt)------------------------------------------------------
 -- For Snake movement
 
@@ -130,7 +128,7 @@ function love.update(dt)------------------------------------------------------
 	       createEnemyTimer = createEnemyTimerMax
 -- Create an enemy
 	   randomNumber = math.random(10, love.graphics.getWidth() - 10)
-	    newEnemy = { x = randomNumber, y = -10, img = enemyImg }
+	    newEnemy = { x = randomNumber, y = -10, img = enemyImg, bulletCollision = false }
 	     table.insert(enemies, newEnemy)
 
     end
@@ -151,7 +149,7 @@ function love.update(dt)------------------------------------------------------
 			      table.remove(enemies, i)
 			       score = score + 1
              explosionSound:play()
-             bulletCollision = true
+             enemy.bulletCollision = true
        end
     end
   end
@@ -272,9 +270,11 @@ local spriteNum = math.floor(animation.currentTime / animation.duration * #animT
         love.graphics.draw(animThrust.spriteSheet, animThrust.quads[spriteNum], (player.x), (player.y+25), 0, 1)
 end
 
-if bulletCollision == true then
+for i, enemy in ipairs(enemies) do
+  if enemy.bulletCollision=true then
 local spriteNum = math.floor(animation.currentTime / animation.duration * #animExplode.quads) + 1
-        love.graphics.draw(animExplode.spriteSheet, animExplode.quads[spriteNum], 300, 100, 0, 1)
+        love.graphics.draw(animExplode.spriteSheet, animExplode.quads[spriteNum], enemy.x, enemy.y, 0, 1)
+      end
 end
 local spriteNum = math.floor(animation.currentTime / animation.duration * #animBaddySpin.quads) + 1
         love.graphics.draw(animBaddySpin.spriteSheet, animBaddySpin.quads[spriteNum],baddySpin.x,baddyScroll,-1)

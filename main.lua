@@ -91,6 +91,8 @@ function love.load(arg)------------------------------------------------------
   UIImg = love.graphics.newImage('Sprites/AnimCockpit.png')
   --BaddySpin
   baddySpinImg = love.graphics.newImage('Sprites/BaddySpin.png')
+  --Alphaimg
+  alphaNil = love.graphics.newImage('Sprites/AlphaNil.png')
 end
 
 function love.update(dt)------------------------------------------------------
@@ -146,12 +148,12 @@ function love.update(dt)------------------------------------------------------
 
 		   if CheckCollision(enemy.x, enemy.y, enemy.img:getWidth(), enemy.img:getHeight(), bullet.x, bullet.y, bullet.img:getWidth(), bullet.img:getHeight()) then
 			      table.remove(bullets, j)
-			      table.remove(enemies, i)
+            
 			       score = score + 1
              explosionSound:play()
              enemy.bulletCollision = true
-            table.remove(enemies, i)
-            table.insert(enemies,enemy)
+             enemyImg = alphaNil
+
        end
     end
   end
@@ -253,7 +255,7 @@ function love.draw(dt)----------------------------------------------------
   love.graphics.drawLayer(image, 2, Snake_x+175, Snake_y)
 
 
-
+  love.graphics.draw(alphaNil,0,0,0,0)
 
   for i, bullet in ipairs(bullets) do
     love.graphics.draw(bullet.img, bullet.x, bullet.y)

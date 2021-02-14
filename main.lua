@@ -150,6 +150,8 @@ function love.update(dt)------------------------------------------------------
 			       score = score + 1
              explosionSound:play()
              enemy.bulletCollision = true
+            table.remove(enemies, i)
+            table.insert(enemies,enemy)
        end
     end
   end
@@ -271,10 +273,10 @@ local spriteNum = math.floor(animation.currentTime / animation.duration * #animT
 end
 
 for i, enemy in ipairs(enemies) do
-  if enemy.bulletCollision=true then
+  if enemy.bulletCollision == true then
 local spriteNum = math.floor(animation.currentTime / animation.duration * #animExplode.quads) + 1
         love.graphics.draw(animExplode.spriteSheet, animExplode.quads[spriteNum], enemy.x, enemy.y, 0, 1)
-      end
+  end
 end
 local spriteNum = math.floor(animation.currentTime / animation.duration * #animBaddySpin.quads) + 1
         love.graphics.draw(animBaddySpin.spriteSheet, animBaddySpin.quads[spriteNum],baddySpin.x,baddyScroll,-1)

@@ -25,7 +25,7 @@ enemyImg = nil -- Like other images we'll pull this in during out love.load func
 enemies = {} -- array of current enemies on screen
 
 baddySpinImg = nil
-baddySpin = {}
+baddySpin = {x=200,y=400, width= 30, height = 30, speed = 150, img = nil}
 
 canShoot = true
 canShootTimerMax = 0.2
@@ -67,7 +67,6 @@ function love.load(arg)------------------------------------------------------
     love.graphics.setDefaultFilter('nearest', 'nearest')
 
   --music
-
   music:setVolume(0.3)
   music:setLooping(true)
   music:play()
@@ -86,9 +85,12 @@ function love.load(arg)------------------------------------------------------
   image = love.graphics.newArrayImage(sprites)
   --player
   playerImg = love.graphics.newImage('Sprites/XenonShip.png')
+  --Bullet
   bulletImg = love.graphics.newImage('Sprites/Bolt.png')
-
+  --UI
   UIImg = love.graphics.newImage('Sprites/AnimCockpit.png')
+  --BaddySpin
+  baddySpinImg = love.graphics.newImage('Sprites/BaddySpin.png')
 end
 
 
@@ -143,6 +145,7 @@ function love.update(dt)------------------------------------------------------
 -- Also, we need to see if the enemies hit our player
   for i, enemy in ipairs(enemies) do
  	 for j, bullet in ipairs(bullets) do
+
 		   if CheckCollision(enemy.x, enemy.y, enemy.img:getWidth(), enemy.img:getHeight(), bullet.x, bullet.y, bullet.img:getWidth(), bullet.img:getHeight()) then
 			      table.remove(bullets, j)
 			      table.remove(enemies, i)
@@ -268,13 +271,14 @@ if isAlive then
 local spriteNum = math.floor(animation.currentTime / animation.duration * #animThrust.quads) + 1
         love.graphics.draw(animThrust.spriteSheet, animThrust.quads[spriteNum], (player.x), (player.y+25), 0, 1)
 end
+
 if bulletCollision == true then
 local spriteNum = math.floor(animation.currentTime / animation.duration * #animExplode.quads) + 1
-        love.graphics.draw(animExplode.spriteSheet, animExplode.quads[spriteNum], (enemy.x), (enemy.y), 0, 1)
+        love.graphics.draw(animExplode.spriteSheet, animExplode.quads[spriteNum], 300, 100, 0, 1)
 end
-
 local spriteNum = math.floor(animation.currentTime / animation.duration * #animBaddySpin.quads) + 1
-        love.graphics.draw(animBaddySpin.spriteSheet, animBaddySpin.quads[spriteNum],200,baddyScroll,-1)
+        love.graphics.draw(animBaddySpin.spriteSheet, animBaddySpin.quads[spriteNum],baddySpin.x,baddyScroll,-1)
+
         love.graphics.draw(UIImg, 0, 0, r, sx, sy, ox, oy, kx, ky)
 
 local spriteNum = math.floor(animation.currentTime / animation.duration * #animUi.quads) + 1

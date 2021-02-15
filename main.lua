@@ -278,13 +278,16 @@ function love.draw(dt)----------------------------------------------------
     love.graphics.draw(bullet.img, bullet.x, bullet.y)
   end
 
+  -- draw enemies
   for i, enemy in ipairs(enemies) do
+    -- if enemy has no bullet collision, draw it
     if enemy.bulletCollision == false then
 	     love.graphics.draw(enemy.img, enemy.x, enemy.y)
     else
+      -- otherwise animate explosion specific to enemy
       local spriteNum = math.floor(enemy.explAnimation.currentTime / enemy.explAnimation.duration * #animExplode.quads) + 1
       love.graphics.draw(animExplode.spriteSheet, animExplode.quads[spriteNum], enemy.x, enemy.y, 0, 1)
-
+      -- stop animating when all frames have been shown
       if (spriteNum >= #animExplode.quads) then
          table.remove(enemies,i)
       end

@@ -1,24 +1,6 @@
 io.stdout:setvbuf('no')
-require ("conf")
 
--- Collision detection taken function from http://love2d.org/wiki/BoundingBox.lua
--- Returns true if two boxes overlap, false if they don't
--- x1,y1 are the left-top coords of the first box, while w1,h1 are its width and height
--- x2,y2,w2 & h2 are the same, but for the second box
-function CheckCollision(x1,y1,w1,h1, x2,y2,w2,h2)
-  return x1 < x2+w2 and
-         x2 < x1+w1 and
-         y1 < y2+h2 and
-         y2 < y1+h1
-end
-
-function MyCollision(Snake_x,Snake_y,Snake_w,Snake_h,x1,y1,w1,h1)
-  return x1 < Snake_x+Snake_w and
-         Snake_x < x1+w1 and
-         y1 < Snake_y+Snake_h and
-         Snake_y < y1+h1
-end
-
+require "collision"
 
 isAlive = true
 score = 0
@@ -37,7 +19,6 @@ canShootTimer = canShootTimerMax
 bulletImg = nil
 bullets = {} -- array of current bullets being drawn and updated
 bulletCollision = false
-
 
 player ={x=200, y=400, speed = 150, img=nil}
 --space
@@ -108,7 +89,7 @@ function updateAnimation(animation, dt)
 end
 
 function love.update(dt)------------------------------------------------------
-    -- For Snake movement
+-- For Snake movement
     Snake_y = Snake_y + 2
     if Snake_y > 610 then
       Snake_y = - 1
@@ -123,7 +104,6 @@ function love.update(dt)------------------------------------------------------
       animation.currentTime = animation.currentTime - animation.duration
     end
 
-    animExplode = updateAnimation(animExplode, dt);
     animBaddySpin = updateAnimation(animBaddySpin, dt);
 -- Parallex
     backgroundScroll = (backgroundScroll + BACKGROUND_SCROLL_SPEED * dt)
@@ -142,7 +122,7 @@ function love.update(dt)------------------------------------------------------
     if createEnemyTimer < 0 then
 	     createEnemyTimer = createEnemyTimerMax
        -- Create an enemy
-	      randomNumber = math.random(10, love.graphics.getWidth() - 10)
+	      randomNumber = math.random(40, love.graphics.getWidth() - 80)
   	  newEnemy = {
         x = randomNumber,
         y = -10,
@@ -182,7 +162,8 @@ function love.update(dt)------------------------------------------------------
 		       isAlive = false
            explosionSound:play()
   end
-  if MyCollision(Snake_x,Snake_y,Snake_w, Snake_h,player.x, player.y, player.img:getWidth(), player.img:getHeight())
+
+  if CheckCollision(Snake_x, Snake_y, Snake_w, Snake_h, player.x, player.y, player.img:getWidth(), player.img:getHeight())
     and isAlive then
         isAlive = false
         explosionSound:play()

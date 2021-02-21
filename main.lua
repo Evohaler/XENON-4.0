@@ -163,11 +163,28 @@ function love.update(dt)------------------------------------------------------
            explosionSound:play()
   end
 
-  if CheckCollision(Snake_x, Snake_y, Snake_w, Snake_h, player.x, player.y, player.img:getWidth(), player.img:getHeight())
+  if CheckCollision(
+    Snake_x+175,
+    Snake_y,
+    Snake_w,
+    Snake_h,
+    player.x,
+    player.y,
+    player.img:getWidth(),
+    player.img:getHeight()
+  )
     and isAlive then
         isAlive = false
         explosionSound:play()
   end
+
+
+    if CheckCollision(baddySpin.x, baddyScroll, baddySpin.width, baddySpin.height, player.x, player.y, player.img:getWidth(), player.img:getHeight())
+  	   and isAlive then
+  		       isAlive = false
+             explosionSound:play()
+    end
+
 end
   -- Time out how far apart our shots can be.
       canShootTimer = canShootTimer - (1 * dt)
@@ -229,7 +246,7 @@ end
     	-- remove all our bullets and enemies from screen
     	bullets = {}
     	enemies = {}
-      baddySpin = {}
+      baddySpin = {x=200,y=400, width= 30, height = 30, speed = 150, img = nil}
     	-- reset timers
     	canShootTimer = canShootTimerMax
     	createEnemyTimer = createEnemyTimerMax

@@ -6,9 +6,9 @@ isAlive = true
 score = 0
 createEnemyTimerMax = 0.4
 createEnemyTimer = createEnemyTimerMax
-enemyImg = nil -- Like other images we'll pull this in during out love.load functio
+enemyImg = nil-- Like other images we'll pull this in during our love.load function
 enemies = {} -- array of current enemies on screen
-
+enemyImg1 =nil
 baddySpinImg = nil
 baddySpin = {x=200,y=400, width= 30, height = 30, speed = 150, img = nil}
 
@@ -63,8 +63,9 @@ function love.load(arg)------------------------------------------------------
   animThrust = newAnimation(love.graphics.newImage("Sprites/RocketPlume.png"), 30, 30)
   animExplode = newAnimation(love.graphics.newImage("Sprites/Explosion.png"), 30, 30)
   animBaddySpin = newAnimation(love.graphics.newImage("Sprites/BaddySpin.png"), 30, 30)
-  --Baddy
+  --Enemies
   enemyImg = love.graphics.newImage('Sprites/Baddie1.png')
+  enemyImg1 = love.graphics.newImage('Sprites/Type2.png')
   --For Snake
   sprites = {"Sprites/BaddySnakeBody.png","Sprites/BaddySnake.png"}
   image = love.graphics.newArrayImage(sprites)
@@ -78,6 +79,8 @@ function love.load(arg)------------------------------------------------------
   baddySpinImg = love.graphics.newImage('Sprites/BaddySpin.png')
   --Alphaimg
   alphaNil = love.graphics.newImage('Sprites/AlphaNil.png')
+  -- Pickuplarge
+  largePickup = love.graphics.newImage("Sprites/powerup.png")
 end
 
 function updateAnimation(animation, dt)
@@ -89,6 +92,7 @@ function updateAnimation(animation, dt)
 end
 
 function love.update(dt)------------------------------------------------------
+
 -- For Snake movement
     Snake_y = Snake_y + 2
     if Snake_y > 610 then
@@ -101,9 +105,8 @@ function love.update(dt)------------------------------------------------------
 --Animation
     animation.currentTime = animation.currentTime + dt
     if animation.currentTime >= animation.duration then
-      animation.currentTime = animation.currentTime - animation.duration
+        animation.currentTime = animation.currentTime - animation.duration
     end
-
     animBaddySpin = updateAnimation(animBaddySpin, dt);
 -- Parallex
     backgroundScroll = (backgroundScroll + BACKGROUND_SCROLL_SPEED * dt)
@@ -123,14 +126,23 @@ function love.update(dt)------------------------------------------------------
 	     createEnemyTimer = createEnemyTimerMax
        -- Create an enemy
 	      randomNumber = math.random(40, love.graphics.getWidth() - 80)
-  	  newEnemy = {
+  	    type1 = {
         x = randomNumber,
         y = -10,
         img = enemyImg,
         bulletCollision = false,
         explAnimation = newAnimation(love.graphics.newImage("Sprites/Explosion.png"), 30, 30)
       }
-  	  table.insert(enemies, newEnemy)
+      type2 = {
+      x = randomNumber,
+      y = -100,
+      img = enemyImg1,
+      bulletCollision = false,
+      explAnimation = newAnimation(love.graphics.newImage("Sprites/Explosion.png"), 30, 30)
+    }
+
+  	  table.insert(enemies, type1)
+      table.insert(enemies, type2)
     end
 -- update the positions of enemies
     for i, enemy in ipairs(enemies) do
@@ -156,7 +168,16 @@ function love.update(dt)------------------------------------------------------
     end
   end
 
-	if CheckCollision(enemy.x, enemy.y, enemy.img:getWidth(), enemy.img:getHeight(), player.x, player.y, player.img:getWidth(), player.img:getHeight())
+	if CheckCollision(
+    enemy.x,
+    enemy.y,
+    enemy.img:getWidth(),
+    enemy.img:getHeight(),
+    player.x,
+    player.y,
+    player.img:getWidth(),
+    player.img:getHeight()
+  )
 	   and isAlive then
 		     table.remove(enemies, i)
 		       isAlive = false
@@ -179,10 +200,19 @@ function love.update(dt)------------------------------------------------------
   end
 
 
-    if CheckCollision(baddySpin.x, baddyScroll, baddySpin.width, baddySpin.height, player.x, player.y, player.img:getWidth(), player.img:getHeight())
-  	   and isAlive then
-  		       isAlive = false
-             explosionSound:play()
+  if CheckCollision(
+    baddySpin.x,
+    baddyScroll,
+    baddySpin.width,
+    baddySpin.height,
+    player.x,
+    player.y,
+    player.img:getWidth(),
+    player.img:getHeight()
+  )
+  	and isAlive then
+  		  isAlive = false
+        explosionSound:play()
     end
 
 end
@@ -203,10 +233,11 @@ end
   end
 
   if love.keyboard.isDown('space') and canShoot and isAlive then
-	      newBullet = { x = player.x + (player.img:getWidth()/2), y = player.y, img = bulletImg, gunSound:play() }
-	       table.insert(bullets, newBullet)
-	    canShoot = false
-	    canShootTimer = canShootTimerMax
+	      newBullet = { x = player.x + (player.img:getWidth()/2), y = player.y, img = bulletImg,
+        gunSound:play() }
+	      table.insert(bullets, newBullet)
+	      canShoot = false
+	      canShootTimer = canShootTimerMax
   end
   for i, bullet in ipairs(bullets) do
 	   bullet.y = bullet.y - (250 * dt)
@@ -262,7 +293,6 @@ end
 function love.draw(dt)----------------------------------------------------
 
   love.graphics.draw(background,0,backgroundScroll,0,1,1,0,600)
-  --love.graphics.draw(baddySpin,300,backgroundScroll,0,10,0,0,400)
   love.graphics.drawLayer(image, 1, Snake_x, Snake_y)
   love.graphics.drawLayer(image, 1, Snake_x+25, Snake_y)
   love.graphics.drawLayer(image, 1, Snake_x+50, Snake_y)

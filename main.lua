@@ -27,7 +27,12 @@ bulletImg = nil
 bullets = {} -- array of current bullets being drawn and updated
 bulletCollision = false
 
-player ={x=200, y=400, speed = 150, img=nil}
+player ={
+         x=200,
+         y=400,
+         speed = 150,
+         img=nil
+       }
 --space
 background = love.graphics.newImage('Sprites/space_1200.png')
 backgroundScroll = 0
@@ -114,9 +119,10 @@ function love.update(dt)------------------------------------------------------
     type1.ty = type1.ty +1
     type1.tx = type1.tx +1
     if type1.tx > 400 then
-      type1.tx = -1
+      type1.tx = type1.tx -400
+      type1.ty = type1.ty +600
     end
-    
+
   --Failed baddy shoot back
     --newBullet = { x = type1.tx + (type1.img:getWidth()/2), y = type1.ty, img = bulletImg,
   --  gunSound:play() }
@@ -192,7 +198,8 @@ function love.update(dt)------------------------------------------------------
 -- Also, we need to see if the enemies hit our player
   for i, enemy in ipairs(enemies) do
  	 for j, bullet in ipairs(bullets) do
-		   if CheckCollision(enemy.x,
+		   if CheckCollision(
+        enemy.x,
         enemy.y,
         enemy.img:getWidth(),
         enemy.img:getHeight(),
@@ -205,9 +212,26 @@ function love.update(dt)------------------------------------------------------
 	      score = score + 1
         explosionSound:play()
         enemy.bulletCollision = true
-       end
+  end
+
+  if CheckCollision(
+      type1.tx,
+      type1.ty,
+      type1.img:getWidth(),
+      type1.img:getHeight(),
+      bullet.x,
+      bullet.y,
+      bullet.img:getWidth(),
+      bullet.img:getHeight()
+      ) then
+      table.remove(bullets, j)
+      score = score + 5
+      explosionSound:play()
+      bulletCollision = true
+
     end
   end
+end
 
 	if CheckCollision(
     enemy.x,
@@ -240,6 +264,20 @@ function love.update(dt)------------------------------------------------------
         explosionSound:play()
   end
 
+  if CheckCollision(
+    type1.tx,
+    type1.ty,
+    type1.tw,
+    type1.th,
+    player.x,
+    player.y,
+    player.img:getWidth(),
+    player.img:getHeight()
+  )
+  	and isAlive then
+  		  isAlive = false
+        explosionSound:play()
+    end
 
   if CheckCollision(
     baddySpin.x,
@@ -361,9 +399,16 @@ function love.draw(dt)----------------------------------------------------
       if (spriteNum >= #animExplode.quads) then
          table.remove(enemies,i)
       end
+
+    if bulletCollision == false then
+       love.graphics.draw(type1.img, type1.tx, type1.ty)
+    else
+    local spriteNum = math.floor(enemy.explAnimation.currentTime / enemy.explAnimation.duration * #animExplode.quads) + 1
+    love.graphics.draw(animExplode.spriteSheet, animExplode.quads[spriteNum], type1.tx, type1.ty, 0, 1)
     end
   end
-  love.graphics.draw(type1.img, type1.tx, type1.ty)
+end
+
   love.graphics.draw(ground,0,groundScroll,0,1,1,0,600)
 
   local spriteNum = math.floor(animation.currentTime / animation.duration * #animation.quads) + 1
